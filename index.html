@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memori Kita</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    background:#c061b6;
+    font-family:'Cormorant Garamond', serif;
+}
+
+/* LANDSCAPE LOCK */
+#rotateWarning{
+    position:fixed;
+    inset:0;
+    background:#f3eee6;
+    z-index:9999;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.rotateText{
+    font-size:20px;
+    font-family:'Playfair Display', serif;
+    color:#7a2d14;
+}
+
+@media screen and (orientation: portrait){
+    #rotateWarning{ display:flex; }
+    .wrapper{ display:none; }
+}
+
+/* WRAPPER */
+.wrapper{
+    width:95%;
+    max-width:1100px;
+    margin:40px auto;
+    background:#f3eee6;
+    padding:60px 40px;
+    border:2px solid #7a2d14;
+}
+
+/* LAYOUT */
+.container{
+    display:flex;
+    gap:60px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+/* VINYL */
+.vinyl{
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:radial-gradient(circle,#222 0%,#000 60%,#111 75%,#000 100%);
+    animation:spin 8s linear infinite;
+    position:relative;
+}
+
+@keyframes spin{ to{transform:rotate(360deg)} }
+
+.cover{
+    position:absolute;
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    overflow:hidden;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:#d4a300;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.cover span{
+    color:white;
+    text-align:center;
+    font-family:'Playfair Display', serif;
+}
+
+.cover img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* PLAYER */
+.player{
+    margin-top:20px;
+    display:flex;
+    gap:15px;
+    align-items:center;
+}
+
+/* PLAY BUTTON */
+.playBtn{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:#1db954;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+    transition:0.3s ease;
+    box-shadow:0 6px 18px rgba(0,0,0,0.25);
+}
+
+.playBtn:hover{
+    transform:scale(1.1);
+    background:#17a74a;
+}
+
+.playBtn.playing{
+    animation:pulse 1.6s infinite;
+}
+
+@keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(29,185,84,0.6);}
+    70%{box-shadow:0 0 0 18px rgba(29,185,84,0);}
+    100%{box-shadow:0 0 0 0 rgba(29,185,84,0);}
+}
+
+/* PROGRESS */
+.songBox{ min-width:220px; }
+
+.progressArea{
+    margin-top:8px;
+    width:100%;
+    height:6px;
+    background:#ddd;
+    border-radius:10px;
+    cursor:pointer;
+    overflow:hidden;
+}
+
+.progressBar{
+    height:100%;
+    width:0%;
+    background:#1db954;
+    transition:width .2s linear;
+}
+
+.time{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    margin-top:4px;
+    color:#555;
+}
+
+/* MEMORY */
+.memory{
+    flex:1;
+    min-width:280px;
+}
+
+.memory h1{
+    font-family:'Playfair Display', serif;
+    font-size:38px;
+    margin-bottom:20px;
+}
+
+.item{
+    margin:10px 0;
+    padding:12px 20px;
+    border-left:3px solid #cfcfcf;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.item:hover{
+    background:#ead8c8;
+    transform:translateX(6px);
+    border-left:5px solid #7a2d14;
+}
+
+.item b{
+    font-family:'Playfair Display', serif;
+}
+
+/* POPUP */
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    opacity:0;
+    pointer-events:none;
+    transition:.4s;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.paper{
+    background:#fdfaf4;
+    padding:30px;
+    border-radius:10px;
+    max-width:500px;
+    width:90%;
+    text-align:center;
+}
+
+/* FOTO & VIDEO UPDATE */
+.paper img, .paper video{
+    max-width:100%;
+    max-height:70vh; /* tinggi maksimal 70% viewport */
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.backBtn{
+    margin-top:20px;
+    padding:10px 22px;
+    background:#111;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* FLOWER */
+#flowerContainer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+}
+
+.falling-flower{
+    position:absolute;
+    top:-40px;
+    width:15px;
+    height:15px;
+    border-radius:50%;
+    background:radial-gradient(circle,#ffb6c1,#ff69b4);
+    animation:fall 8s linear;
+}
+
+@keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+
+/* ===== TAMBAHAN TOMBOL SURAT ===== */
+.loveButtonContainer{
+    display:flex;
+    justify-content:center;
+    margin:50px 0;
+}
+
+.loveBtn{
+    padding:14px 32px;
+    font-family:'Playfair Display', serif;
+    font-size:16px;
+    background:#7a2d14;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    animation:shake 1s infinite;
+    transition:.3s;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-3px);}
+    50%{transform:translateX(3px);}
+    75%{transform:translateX(-3px);}
+    100%{transform:translateX(0);}
+}
+
+#letterOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    opacity:0;
+    pointer-events:none;
+    transition:.4s;
+}
+
+#letterOverlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.letterPaper{
+    background:#fffaf0;
+    padding:35px;
+    border-radius:12px;
+    max-width:500px;
+    width:90%;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div id="rotateWarning">
+<div class="rotateText">
+Putar HP ke samping dulu ya ayang 💕<br>
+Biar kenangan kita tampil sempurna ✨
+</div>
+</div>
+
+<div class="wrapper">
+<div class="container">
+
+<!-- LEFT SIDE -->
+<div>
+<div class="vinyl" id="vinyl">
+<div class="cover">
+<span id="coverText">Happy<br>Valentine</span>
+<img id="coverImg">
+</div>
+</div>
+
+<div class="player">
+<div class="playBtn playing" id="playBtn" onclick="toggleMusic()">⏸</div>
+
+<div class="songBox">
+<b>Until I Found You</b><br>
+<small>Stephen Sanchez</small>
+
+<div class="progressArea" onclick="setProgress(event)">
+<div class="progressBar" id="progressBar"></div>
+</div>
+
+<div class="time">
+<span id="current">0:00</span>
+<span id="duration">0:00</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- RIGHT SIDE MEMORY -->
+<div class="memory">
+<h1>Memori Kita</h1>
+
+<div class="item" onclick="openPaper(0)">
+<div>12 Mei 2022</div><b>01. Pertemuan Tak Sengaja</b></div>
+
+<div class="item" onclick="openPaper(1)">
+<div>20 Juni 2022</div><b>02. Obrolan Tengah Malam</b></div>
+
+<div class="item" onclick="openPaper(2)">
+<div>15 Sept 2023</div><b>03. Di Atas Awan</b></div>
+
+<div class="item" onclick="openPaper(3)">
+<div>01 Jan 2026</div><b>04. Langkah Baru</b></div>
+
+</div>
+
+</div>
+
+<!-- ===== TAMBAHAN TOMBOL PENCET AKU ===== -->
+<div class="loveButtonContainer">
+<button class="loveBtn" onclick="openLetter()">PENCET AKU 💌</button>
+</div>
+
+</div> <!-- END WRAPPER -->
+
+<div id="flowerContainer"></div>
+
+<div class="overlay" id="overlay" onclick="closePaper()">
+<div class="paper" onclick="event.stopPropagation()">
+<img id="paperImg">
+<video id="memoryVideo" controls style="display:none;"></video>
+<h2 id="paperTitle"></h2>
+<p id="paperDesc"></p>
+<button class="backBtn" onclick="closePaper()">KEMBALI</button>
+</div>
+</div>
+
+<audio id="music" autoplay loop>
+<source src="sound.mp3">
+</audio>
+
+<script>
+const music=document.getElementById("music");
+const vinyl=document.getElementById("vinyl");
+const btn=document.getElementById("playBtn");
+const progressBar=document.getElementById("progressBar");
+const current=document.getElementById("current");
+const duration=document.getElementById("duration");
+const overlay=document.getElementById("overlay");
+const paperImg=document.getElementById("paperImg");
+const paperTitle=document.getElementById("paperTitle");
+const paperDesc=document.getElementById("paperDesc");
+const memoryVideo=document.getElementById("memoryVideo");
+const flowerContainer=document.getElementById("flowerContainer");
+
+const memories=[
+ {title:"Awal Segalanya", img:"foto1.jpg", desc:"Masih ingat hari itu?", video:"video1.mp4"},
+ {title:"Obrolan Tengah Malam", img:"gambar1.jpeg", desc:"Obrolan panjang yang nggak mau selesai."},
+ {title:"Di Atas Awan", img:"foto3.jpg", desc:"Momen indah yang nggak akan terlupa."},
+ {title:"Langkah Baru", img:"foto4.jpg", desc:"Langkah baru kita bersama."}
+];
+
+function toggleMusic(){
+ if(music.paused){
+  music.play();
+  vinyl.style.animationPlayState="running";
+  btn.innerHTML="⏸";
+  btn.classList.add("playing");
+ }else{
+  music.pause();
+  vinyl.style.animationPlayState="paused";
+  btn.innerHTML="▶";
+  btn.classList.remove("playing");
+ }
+}
+
+music.addEventListener("loadedmetadata",()=>{
+ duration.innerText=formatTime(music.duration);
+});
+
+music.addEventListener("timeupdate",()=>{
+ const percent=(music.currentTime/music.duration)*100;
+ progressBar.style.width=percent+"%";
+ current.innerText=formatTime(music.currentTime);
+});
+
+music.addEventListener("ended", function(){
+    music.currentTime = 0;
+    music.play();
+    vinyl.style.animationPlayState = "running"; 
+    btn.innerHTML = "⏸";
+    btn.classList.add("playing");
+});
+
+function setProgress(e){
+ const width=e.currentTarget.clientWidth;
+ const clickX=e.offsetX;
+ music.currentTime=(clickX/width)*music.duration;
+}
+
+function formatTime(time){
+ const min=Math.floor(time/60);
+ const sec=Math.floor(time%60).toString().padStart(2,"0");
+ return min+":"+sec;
+}
+
+function openPaper(i){
+ paperTitle.innerText = memories[i].title;
+ paperDesc.innerText = memories[i].desc;
+
+ if(memories[i].video){
+    music.pause();
+    btn.innerHTML="▶";
+    btn.classList.remove("playing");
+    vinyl.style.animationPlayState="paused";
+
+    memoryVideo.src = memories[i].video;
+    memoryVideo.style.display = "block";
+    memoryVideo.autoplay = true;
+    memoryVideo.loop = true;
+    paperImg.style.display = "none";
+    memoryVideo.play();
+ } else {
+    memoryVideo.pause();
+    memoryVideo.currentTime = 0;
+    memoryVideo.style.display = "none";
+
+    paperImg.src = memories[i].img;
+    paperImg.style.display = "block";
+ }
+
+ overlay.classList.add("show");
+}
+
+function closePaper(){
+ overlay.classList.remove("show");
+ memoryVideo.pause();
+ memoryVideo.currentTime = 0;
+
+ music.play();
+ btn.innerHTML="⏸";
+ btn.classList.add("playing");
+ vinyl.style.animationPlayState="running";
+}
+
+setInterval(()=>{
+ const f=document.createElement("div");
+ f.className="falling-flower";
+ f.style.left=Math.random()*100+"%";
+ flowerContainer.appendChild(f);
+ setTimeout(()=>f.remove(),8000);
+},500);
+
+const letterOverlay=document.createElement("div");
+letterOverlay.id="letterOverlay";
+letterOverlay.innerHTML=`
+<div class="letterPaper" onclick="event.stopPropagation()">
+<h2>Untuk Kamu 💕</h2>
+<p>
+Terima kasih sudah jadi bagian terindah dari hidupku.
+Semoga semua kenangan ini terus bertambah,
+dan kita tetap berjalan bersama ✨
+</p>
+<button class="backBtn" onclick="closeLetter()">TUTUP</button>
+</div>
+`;
+document.body.appendChild(letterOverlay);
+
+const loveBtn=document.querySelector(".loveBtn");
+
+function openLetter(){
+ letterOverlay.classList.add("show");
+ loveBtn.style.animation="none";
+}
+
+function closeLetter(){
+ letterOverlay.classList.remove("show");
+ loveBtn.style.animation="shake 1s infinite";
+}
+
+// ===== ROTATE + AUTOPLAY MUSIK =====
+const rotateWarning = document.getElementById("rotateWarning");
+
+function tryPlayMusic() {
+    music.play().then(() => {
+        btn.innerHTML = "⏸";
+        btn.classList.add("playing");
+        vinyl.style.animationPlayState = "running";
+    }).catch(err => {
+        console.log("Autoplay diblok browser:", err);
+    });
+}
+
+function checkOrientation() {
+    if(window.innerHeight > window.innerWidth){
+        rotateWarning.style.display = "flex";
+        tryPlayMusic();
+    } else {
+        rotateWarning.style.display = "none";
+        if(music.paused){
+            tryPlayMusic();
+        }
+    }
+}
+
+window.addEventListener("load", checkOrientation);
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
+
+</script>
+
+</body>
+</html>
